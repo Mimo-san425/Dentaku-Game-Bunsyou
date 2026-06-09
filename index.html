@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>でんたく 文章問題</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+body{
+  margin:0;
+  font-family:"Hiragino Sans","Yu Gothic",sans-serif;
+  background:linear-gradient(135deg,#fff7c7,#dff6ff,#ffdff0);
+  color:#222;
+  overflow-x:hidden;
+}
+
+.wrap{
+  min-height:100vh;
+  padding:24px 34px 36px;
+}
+
+.title{
+  font-size:38px;
+  font-weight:800;
+  color:#ff6b9a;
+  text-shadow:2px 2px 0 #fff;
+  margin-bottom:18px;
+}
+
+.status{
+  font-size:26px;
+  font-weight:700;
+  margin-bottom:14px;
+  background:#ffffffdd;
+  border:4px solid #ffffff;
+  border-radius:18px;
+  display:inline-block;
+  padding:8px 18px;
+}
+
+.question-area{
+  background:#ffffffdd;
+  border:6px solid #ffc8dd;
+  border-radius:30px;
+  padding:28px 30px;
+  margin-bottom:34px;
+  box-shadow:0 8px 0 #ffafcc;
+}
+
+.story-question{
+  font-size:42px;
+  line-height:1.65;
+  font-weight:900;
+  color:#333;
+  text-align:left;
+  max-width:900px;
+  margin:0 auto 24px;
+}
+
+.answer-row{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:18px;
+  font-size:36px;
+  font-weight:900;
+}
+
+.answer-box{
+  min-width:210px;
+  height:96px;
+  border:5px solid #444;
+  background:#fffdf5;
+  border-radius:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:66px;
+  font-weight:900;
+}
+
+.bottom{
+  display:flex;
+  gap:38px;
+  flex-wrap:wrap;
+  align-items:flex-start;
+}
+
+.calculator{
+  display:flex;
+  gap:26px;
+  align-items:flex-end;
+  background:#ffffffdd;
+  border:6px solid #bde0fe;
+  border-radius:28px;
+  padding:24px;
+  box-shadow:0 8px 0 #8ecae6;
+}
+
+.left-side{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.calc-display{
+  width:270px;
+  height:76px;
+  border:4px solid #444;
+  background:#fff;
+  font-size:44px;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  padding:0 16px;
+  border-radius:16px;
+  font-weight:800;
+  overflow:hidden;
+}
+
+.num-grid{
+  display:grid;
+  grid-template-columns:repeat(3,74px);
+  gap:14px;
+}
+
+.btn{
+  border:3px solid #444;
+  border-radius:18px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:42px;
+  font-weight:800;
+  box-shadow:0 6px 0 #888;
+}
+
+.btn:active,.control-btn:active{
+  transform:translateY(5px);
+  box-shadow:0 1px 0 #777;
+}
+
+.num-btn{
+  width:74px;
+  height:74px;
+  background:#ffe28a;
+  color:#333;
+}
+
+.op-group{
+  display:flex;
+  gap:24px;
+  align-items:flex-end;
+}
+
+.plus-btn{
+  width:78px;
+  height:190px;
+  background:#ff8fab;
+  color:#fff;
+  font-size:54px;
+}
+
+.right-stack{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.small-op{
+  width:78px;
+  height:74px;
+  background:#90dbf4;
+  color:#fff;
+  font-size:46px;
+}
+
+.small-op:last-child{
+  background:#72dd97;
+}
+
+.side-buttons{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.control-btn{
+  min-width:190px;
+  height:74px;
+  font-size:30px;
+  font-weight:800;
+  border:4px solid #444;
+  border-radius:20px;
+  cursor:pointer;
+  box-shadow:0 6px 0 #999;
+}
+
+.control-btn:nth-child(1){background:#ffe28a}
+.control-btn:nth-child(2){background:#ffc8dd}
+.control-btn:nth-child(3){background:#cdeac0}
+
+.message{
+  min-height:70px;
+  font-size:42px;
+  margin-top:16px;
+  font-weight:900;
+  text-shadow:2px 2px 0 #fff;
+}
+
+.ok{color:#16a34a}
+.ng{color:#dc2626}
+
+.hint{
+  font-size:25px;
+  background:#ffffffcc;
+  padding:10px 16px;
+  border-radius:16px;
+  display:inline-block;
+  color:#444;
+}
+
+.big-mark{
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  font-size:220px;
+  font-weight:900;
+  color:#ff5d8f;
+  text-shadow:6px 6px 0 #fff;
+  z-index:20;
+  pointer-events:none;
+}
+
+.clear-screen{
+  position:fixed;
+  inset:0;
+  background:linear-gradient(135deg,#fff0a8,#caffbf,#bde0fe,#ffc8dd);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  z-index:30;
+  text-align:center;
+}
+
+.clear-screen h1{
+  font-size:70px;
+  margin:0 0 24px;
+  color:#ff4d6d;
+  text-shadow:4px 4px 0 #fff;
+}
+
+.clear-screen p{
+  font-size:34px;
+  font-weight:800;
+}
+
+.clear-screen button{
+  font-size:34px;
+  font-weight:800;
+  padding:18px 34px;
+  border:5px solid #444;
+  border-radius:24px;
+  background:#fff;
+  box-shadow:0 7px 0 #777;
+}
+
+.sparkle{
+  position:fixed;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  background:#fff;
+  z-index:25;
+  pointer-events:none;
+  animation:spark 900ms linear forwards;
+}
+
+@keyframes spark{
+  0%{transform:scale(.2);opacity:1}
+  100%{transform:translate(var(--x),var(--y)) scale(1.8);opacity:0}
+}
+
+@media(max-width:900px){
+  .wrap{padding:18px}
+  .title{font-size:30px}
+  .story-question{font-size:34px}
+  .answer-box{min-width:150px;height:78px;font-size:54px}
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+  <div class="title">文章問題</div>
+  <div id="status" class="status">1 / 10</div>
+
+  <div class="question-area">
+    <div id="questionText" class="story-question"></div>
+    <div class="answer-row">
+      <span>こたえ</span>
+      <div id="answerBox" class="answer-box"></div>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div>
+      <div class="calculator">
+        <div class="left-side">
+          <div id="calcDisplay" class="calc-display">0</div>
+          <div class="num-grid">
+            <button class="btn num-btn" onclick="pressNum('1')">1</button>
+            <button class="btn num-btn" onclick="pressNum('2')">2</button>
+            <button class="btn num-btn" onclick="pressNum('3')">3</button>
+            <button class="btn num-btn" onclick="pressNum('4')">4</button>
+            <button class="btn num-btn" onclick="pressNum('5')">5</button>
+            <button class="btn num-btn" onclick="pressNum('6')">6</button>
+            <button class="btn num-btn" onclick="pressNum('7')">7</button>
+            <button class="btn num-btn" onclick="pressNum('8')">8</button>
+            <button class="btn num-btn" onclick="pressNum('9')">9</button>
+          </div>
+          <button class="btn num-btn" onclick="pressNum('0')">0</button>
+        </div>
+
+        <div class="op-group">
+          <button class="btn plus-btn" onclick="pressOp('+')">＋</button>
+          <div class="right-stack">
+            <button class="btn small-op" onclick="pressOp('-')">−</button>
+            <button class="btn small-op" onclick="checkAnswer()">＝</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="message" class="message"></div>
+      <div class="hint">文章を読んで、でんたくで けいさんします。</div>
+    </div>
+
+    <div class="side-buttons">
+      <button class="control-btn" onclick="clearInput()">けす</button>
+      <button class="control-btn" onclick="showCorrect()">こたえを みる</button>
+      <button class="control-btn" onclick="newQuestion()">つぎの もんだい</button>
+    </div>
+  </div>
+</div>
+
+<div id="bigMark" class="big-mark">○</div>
+
+<div id="clearScreen" class="clear-screen">
+  <h1>10もん クリア！</h1>
+  <p>よく がんばりました！</p>
+  <button onclick="restartGame()">もういちど</button>
+</div>
+
+<script>
+const MAX_COUNT = 10;
+
+let left = 0;
+let right = 0;
+let operator = "+";
+let correctAnswer = 0;
+let input = "";
+let questionCount = 1;
+let locked = false;
+
+const questionText = document.getElementById("questionText");
+const answerBox = document.getElementById("answerBox");
+const calcDisplay = document.getElementById("calcDisplay");
+const message = document.getElementById("message");
+const statusView = document.getElementById("status");
+const bigMark = document.getElementById("bigMark");
+const clearScreen = document.getElementById("clearScreen");
+
+function updateDisplay(){
+  calcDisplay.textContent = input === "" ? "0" : input;
+  answerBox.textContent = input;
+}
+
+function pressNum(n){
+  if(locked)return;
+  if(input.length > 12)return;
+  if(input === "0"){
+    input = n;
+  }else{
+    input += n;
+  }
+  clearMessage();
+  updateDisplay();
+}
+
+function pressOp(op){
+  if(locked)return;
+  if(input === "")return;
+
+  const last = input.slice(-1);
+  if(["+","-"].includes(last)){
+    input = input.slice(0,-1) + op;
+  }else{
+    input += op;
+  }
+
+  clearMessage();
+  updateDisplay();
+}
+
+function clearInput(){
+  if(locked)return;
+  input = "";
+  clearMessage();
+  updateDisplay();
+}
+
+function calcExpression(expr){
+  if(!/^[0-9+\-\s]+$/.test(expr))return null;
+  try{
+    const value = Function("return " + expr)();
+    if(Number.isFinite(value))return value;
+    return null;
+  }catch{
+    return null;
+  }
+}
+
+function checkAnswer(){
+  if(locked)return;
+
+  const result = calcExpression(input);
+
+  if(result === null){
+    message.textContent = "しきが ちがいます";
+    message.className = "message ng";
+    return;
+  }
+
+  answerBox.textContent = result;
+
+  if(result === correctAnswer){
+    locked = true;
+    message.textContent = "せいかい！";
+    message.className = "message ok";
+    showBigMaru();
+    makeSparkles();
+
+    setTimeout(()=>{
+      bigMark.style.display = "none";
+      if(questionCount >= MAX_COUNT){
+        clearScreen.style.display = "flex";
+      }else{
+        questionCount++;
+        newQuestion();
+      }
+      locked = false;
+    },1300);
+  }else{
+    message.textContent = "もういちど";
+    message.className = "message ng";
+  }
+}
+
+function showCorrect(){
+  if(locked)return;
+  answerBox.textContent = correctAnswer;
+  calcDisplay.textContent = correctAnswer;
+  message.textContent = "こたえを みました";
+  message.className = "message";
+}
+
+function clearMessage(){
+  message.textContent = "";
+  message.className = "message";
+}
+
+function randomInt(min,max){
+  return Math.floor(Math.random()*(max-min+1))+min;
+}
+
+function makeAddQuestion(){
+  let a,b;
+  do{
+    a = randomInt(5,9);
+    b = randomInt(5,9);
+  }while(a+b < 10);
+
+  return {
+    left:a,
+    right:b,
+    operator:"+",
+    answer:a+b
+  };
+}
+
+function makeSubQuestion(){
+  const a = randomInt(11,19);
+  const b = randomInt(2,9);
+
+  return {
+    left:a,
+    right:b,
+    operator:"-",
+    answer:a-b
+  };
+}
+
+function makeMixedQuestion(){
+  return Math.random() < 0.5 ? makeAddQuestion() : makeSubQuestion();
+}
+
+function makeStory(q){
+  const addStories = [
+    `こうえんに<br>${q.left}にん います。<br>${q.right}にん きました。<br>みんなで なんにんですか。`,
+    `りんごが<br>${q.left}こ あります。<br>${q.right}こ もらいました。<br>ぜんぶで なんこですか。`,
+    `バスに<br>${q.left}にん のっています。<br>${q.right}にん のりました。<br>なんにんに なりましたか。`,
+    `えんぴつが<br>${q.left}ほん あります。<br>${q.right}ほん ふえました。<br>ぜんぶで なんぼんですか。`,
+    `シールを<br>${q.left}まい もっています。<br>${q.right}まい もらいました。<br>ぜんぶで なんまいですか。`
+  ];
+
+  const subStories = [
+    `クッキーが<br>${q.left}こ あります。<br>${q.right}こ たべました。<br>のこりは なんこですか。`,
+    `こうえんに<br>${q.left}にん いました。<br>${q.right}にん かえりました。<br>のこりは なんにんですか。`,
+    `えんぴつが<br>${q.left}ほん あります。<br>${q.right}ほん つかいました。<br>のこりは なんぼんですか。`,
+    `バスに<br>${q.left}にん のっていました。<br>${q.right}にん おりました。<br>のこりは なんにんですか。`,
+    `シールが<br>${q.left}まい あります。<br>${q.right}まい あげました。<br>のこりは なんまいですか。`
+  ];
+
+  const list = q.operator === "+" ? addStories : subStories;
+  return list[Math.floor(Math.random()*list.length)];
+}
+
+function newQuestion(){
+  const q = makeMixedQuestion();
+
+  left = q.left;
+  right = q.right;
+  operator = q.operator;
+  correctAnswer = q.answer;
+
+  questionText.innerHTML = makeStory(q);
+  statusView.textContent = questionCount + " / " + MAX_COUNT;
+
+  input = "";
+  answerBox.textContent = "";
+  calcDisplay.textContent = "0";
+  clearMessage();
+}
+
+function showBigMaru(){
+  bigMark.style.display = "flex";
+}
+
+function makeSparkles(){
+  for(let i=0;i<70;i++){
+    const s = document.createElement("div");
+    s.className = "sparkle";
+    s.style.left = "50%";
+    s.style.top = "50%";
+    s.style.background = ["#fff","#fde047","#f472b6","#60a5fa","#34d399"][i%5];
+    s.style.setProperty("--x",(Math.random()*900-450)+"px");
+    s.style.setProperty("--y",(Math.random()*600-300)+"px");
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),900);
+  }
+}
+
+function restartGame(){
+  questionCount = 1;
+  clearScreen.style.display = "none";
+  newQuestion();
+}
+
+newQuestion();
+updateDisplay();
+</script>
+</body>
+</html>
